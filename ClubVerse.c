@@ -3,10 +3,8 @@
 #include <string.h>
 #define MAX 30
 
-int clubCount=0;
-int Memcount=0;
-
-typedef struct MemberDetails{
+typedef struct MemberDetails 
+{
     char USN[15];
     char name[30];
     int sem;
@@ -14,290 +12,322 @@ typedef struct MemberDetails{
     struct MemberDetails *link;
 }Member;
 
-typedef struct EventDetails
+typedef struct Date
 {
-    char info[100];
-    int day,month,year;
+    int day;
+    int month;
+    int year;
+}Date;
+
+typedef struct EventDetails 
+{
+    char eventName[100];
+    Date eventDate;
     struct EventDetails *link;
 }Event;
 
-typedef struct ClubDetails{
+typedef struct ClubDetails 
+{
     char clubName[20];
     char description[50];
-    Member *first;
-    struct Event *eventHead;
+    Member *memberLink;
+    Event *eventLink;
+    int memberCount;
+    int eventCount;
 }Club;
 
+void clubMenu(int n, Club clubs[]);
+void addMember(int n, Club clubs[]);
+void removeMember(int n, Club clubs[]);
+void displayMembers(int n, Club clubs[]);
+void addEvent(int n, Club clubs[]);
+void deleteEvent(int n, Club clubs[]);
+void displayEvents(int n, Club clubs[]);
+void displayClubInformation(int n, Club clubs[]);
 
-void clubMenu(int n,Club clubs[])
+int main()
 {
-    int ch=0;
-    while(ch!=7)
+    int N=0;
+    int i,choice;
+    Club clubs[MAX];
+
+    printf("\n\nEnter number of clubs: ");
+    scanf("%d",&N);
+    getchar();
+
+    for(i=0;i<N;i++)
+    {
+        printf("\nEnter name for Club %d: ",i+1);
+        scanf(" %19[^\n]",clubs[i].clubName);
+
+        printf("Enter description: ");
+        scanf(" %49[^\n]",clubs[i].description);
+
+        clubs[i].memberLink=NULL;
+        clubs[i].eventLink=NULL;
+        clubs[i].memberCount=0;
+        clubs[i].eventCount=0;
+    }
+
+    for(;;)
+    {
+        printf("\n------- MAIN MENU ------\n");
+        for(i=0;i<N;i++)
+            printf("%d. %s\n",i+1,clubs[i].clubName);
+        printf("0. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d",&choice);
+
+        if(choice==0)
+            exit(0);
+
+        if(choice>=1 && choice<=N)
+            clubMenu(choice-1,clubs);
+        else
+            printf("Invalid choice. Try again.\n\n");
+    }
+    return 0;
+}
+
+void clubMenu(int n, Club clubs[])
+{
+    int ch;
+    for(;;)
     {
         printf("\n--- %s Club Menu ---\n",clubs[n].clubName);
-        printf("1. Add Member\n2. Remove Member\n3. Display Members\n4. Announce Event\n5. Delete event\n6. Display Club Info\n7. Exit to Main Menu\nEnter choice: ");
+        printf("1. Add Member\n");
+        printf("2. Remove Member\n");
+        printf("3. Add Event\n");
+        printf("4. Delete Event\n");
+        printf("5. Display Members\n");
+        printf("6. Display Events\n");
+        printf("7. Display Club Information\n");
+        printf("8. Exit to Main Menu\n");
+        printf("Enter choice: ");
         scanf("%d",&ch);
 
-        switch(ch){
+        switch(ch)
+        {
             case 1: addMember(n,clubs);
                     break;
             case 2: removeMember(n,clubs);
                     break;
-            case 3: displayMembers(n,clubs);
+            case 3: addEvent(n,clubs);
                     break;
-            case 4: addEvent(n,clubs);
+            case 4: deleteEvent(n,clubs);
                     break;
-            case 5: deleteEvent(n,clubs);
+            case 5: displayMembers(n,clubs);
                     break;
-            case 6: displayEventsSorted(n,clubs);
+            case 6: displayEvents(n,clubs);
                     break;
+            case 7: displayClubInformation(n,clubs);
+                    break;
+            case 8: printf("Exiting to Main Menu...\n\n");
+                    return;
+            default:printf("Invalid choice. Try again.\n");
         }
     }
 }
 
-void addMember(int n,Club clubs[])
+Member *getMemberNode()
 {
     Member *new=(Member *)malloc(sizeof(Member));
     new->link=NULL;
+    return new;
+}
 
-    printf("Enter USN: ");
+void addMember(int n,Club clubs[])
+{
+    Member *new=getMemberNode();
+
+    printf("\nEnter USN: ");
     scanf("%s",new->USN);
 
     printf("Enter member name: ");
-    getchar();
-    fgets(new->name,30,stdin);
-    new->name[strcspn(new->name,"\n")]=0;
+    scanf(" %29[^\n]",new->name);
 
     printf("Enter sem: ");
     scanf("%d",&new->sem);
 
     printf("Enter Role: ");
-    getchar();
-    fgets(new->Role,20,stdin);
-    new->Role[strcspn(new->Role,"\n")]=0;
-    
-    if(clubs[n].first==NULL)
-    {
-        clubs[n].first=new;
-    }
+    scanf(" %19[^\n]",new->Role);
+
+    if(clubs[n].memberLink==NULL)
+        clubs[n].memberLink=new;
     else
     {
-        Member *temp=clubs[n].first;
-        while(temp->link!=NULL)temp=temp->link;
+        Member *temp=clubs[n].memberLink;
+        while(temp->link!=NULL)
+            temp=temp->link;
         temp->link=new;
     }
+    clubs[n].memberCount++;
     printf("Member (%s) added successfully!\n",new->USN);
-    Memcount++;
+    return;
 }
 
 void removeMember(int n,Club clubs[])
 {
+    if(clubs[n].memberLink == NULL) 
+    {
+        printf("No members in this club.\n");
+        return;
+    }
+    
     char USN[15];
     printf("Enter USN to remove: ");
     scanf("%s",USN);
 
-    Member *temp=clubs[n].first,*prev=NULL;
-    if(temp==NULL)
+    Member *cur=clubs[n].memberLink, *prev=NULL;
+    if(strcmp(cur->USN,USN) == 0) // first member is the one to remove...EasyPeasyLemonSqueezyBaby
+    {
+        clubs[n].memberLink=cur->link;
+        printf("Member (%s) removed.\n",cur->USN);
+        free(cur);
+        clubs[n].memberCount--;
+        return;
+    }
+
+    while(cur!=NULL)
+    {
+        if(strcmp(cur->USN,USN) == 0)
+            break;
+        prev=cur;
+        cur=cur->link;
+    }
+
+    if(cur==NULL)
     {
         printf("Member (%s) not found.\n",USN);
         return;
     }
 
-    if(strcmp(temp->USN,USN)==0)
-    {
-        clubs[n].first=temp->link;
-        free(temp);
-        Memcount--;
-        printf("Member (%s) removed.\n",USN);
-        return;
-    }
-
-    while(temp!=NULL && strcmp(temp->USN,USN)!=0)
-    {
-        prev=temp;
-        temp=temp->link;
-    }
-
-    if(temp==NULL)
-    {
-        printf("Member (%s) not found.\n",USN);
-        return;
-    }
-    prev->link=temp->link;
-    free(temp);
-    Memcount--;
-    printf("Member (%s) removed.\n",USN);
+    prev->link=cur->link;
+    printf("Member (%s) removed.\n",cur->USN);
+    free(cur);
+    clubs[n].memberCount--;
+    return;
 }
 
 void displayMembers(int n,Club clubs[])
 {
-    Member *temp=clubs[n].first;
-
-    if(temp==NULL){
+    Member *temp=clubs[n].memberLink;
+    if(temp==NULL)
+    {
         printf("No members in this club.\n");
         return;
     }
 
-    printf("\nMembers of %s:\n",clubs[n].clubName);
+    printf("\nMembers of %s :\n",clubs[n].clubName);
     printf("--------------------------------------------------------------\n");
     printf("%-15s%-30s%-5s%-20s\n","USN","NAME","SEM","ROLE");
     printf("--------------------------------------------------------------\n");
 
-    while(temp!=NULL){
+    while(temp!=NULL)
+    {
         printf("%-15s%-30s%-5d%-20s\n",temp->USN,temp->name,temp->sem,temp->Role);
         temp=temp->link;
     }
-    printf("--------------------------------------------------------------\nTotal members: %d\n",Memcount);
+    printf("--------------------------------------------------------------\n");
+    printf("Total members: %d\n", clubs[n].memberCount);
+    return;
 }
 
+Event *getEventNode()
+{
+    Event *new=(Event *)malloc(sizeof(Event));
+    new->link=NULL;
+    return new;
+}
 void addEvent(int n,Club clubs[])
 {
-    Event *newEvent=(Event *)malloc(sizeof(Event));
-    printf("Enter event details: ");
-    getchar();
-    fgets(newEvent->info,100,stdin);
+    Event *newEvent=getEventNode();
 
-    newEvent->info[strcspn(newEvent->info,"\n")]=0;
+    printf("\nEnter event details: ");
+    scanf(" %99[^\n]",newEvent->eventName);
+
     printf("Enter date (DD MM YYYY): ");
-    scanf("%d %d %d",&newEvent->day,&newEvent->month,&newEvent->year);
+    scanf("%d %d %d",&newEvent->eventDate.day,&newEvent->eventDate.month,&newEvent->eventDate.year);
 
-    newEvent->link=NULL;
-
-    if(clubs[n].eventHead==NULL)
+    if(clubs[n].eventLink==NULL)
+        clubs[n].eventLink=newEvent;
+    else
     {
-        clubs[n].eventHead=newEvent;
-    }else
-    {
-        Event *temp=clubs[n].eventHead;
+        Event *temp=clubs[n].eventLink;
         while(temp->link!=NULL)
             temp=temp->link;
         temp->link=newEvent;
     }
-    printf("Event added!\n");
+    clubs[n].eventCount++;
+    printf("Event added Successfully!\n");
+    return;
 }
 
 void deleteEvent(int n,Club clubs[])
 {
-    if(clubs[n].eventHead==NULL){
+    if(clubs[n].eventLink==NULL)
+    {
         printf("No events to delete.\n");
         return;
     }
     char name[100];
     printf("Enter event name to delete: ");
-    getchar();
-    fgets(name,100,stdin);
-    name[strcspn(name,"\n")]=0;
+    scanf("%s",name);
 
-    Event *temp=clubs[n].eventHead,*prev=NULL;
-    while(temp!=NULL)
-    {
-        if(strcmp(temp->info,name)==0)
-        {
-            if(prev==NULL)
-                clubs[n].eventHead=temp->link;
-            else 
-                prev->link=temp->link;
-            free(temp);
-            printf("Event deleted.\n");
-            return;
-        }
-        prev=temp;
-        temp=temp->link;
-    }
-    printf("Event not found.\n");
-}
+    Event *cur=clubs[n].eventLink,*prev=NULL;
 
-void sortEvents(Event *head)
-{
-    if (head == NULL || head->link == NULL) 
+    if(strcmp(cur->eventName,name)==0) //  EasyPeasyLemonSqueezyBaby
     {
-        printf("No events\n");
+        clubs[n].eventLink=cur->link;
+        printf("Event (%s) deleted.\n",cur->eventName);
+        free(cur);
+        clubs[n].eventCount--;
         return;
     }
 
-    Event *i = head;
-    while (i != NULL)
+    while(cur!=NULL)
     {
-        Event *j = i->link;
-        while (j != NULL)
-        {
-            if (i->year > j->year ||
-               (i->year == j->year && i->month > j->month) ||
-               (i->year == j->year && i->month == j->month && i->day > j->day))
-            {
-                // swap event details
-                char even[100];
-                int dd = i->day, mm = i->month, yy = i->year;
-
-                strcpy(even, i->info);
-                strcpy(i->info, j->info);
-                i->day = j->day;
-                i->month = j->month;
-                i->year = j->year;
-
-                strcpy(j->info, even);
-                j->day = dd;
-                j->month = mm;
-                j->year = yy;
-            }
-            j = j->link;
-        }
-        i = i->link;
+        if(strcmp(cur->eventName,name)==0)
+            break;
+        prev=cur;
+        cur=cur->link;
     }
+
+    if(cur==NULL)
+    {
+        printf("Event (%s) not found.\n",name);
+        return;
+    }
+
+    prev->link=cur->link;
+    printf("Event (%s) deleted.\n",cur->eventName);
+    free(cur);
+    clubs[n].eventCount--;
+    return;
 }
 
-
-void displayEventsSorted(int n,Club clubs[])
+void displayEvents(int n, Club clubs[])
 {
-    struct Event *head=clubs[n].eventHead;
-    if(head==NULL){
+    Event *temp=clubs[n].eventLink;
+    if(temp==NULL)
+    {
         printf("No events yet.\n");
         return;
     }
-    sortEvents(head);
 
-    Event *temp=head;
     printf("\nEvents for %s:\n",clubs[n].clubName);
-
-    while(temp!=NULL){
-        printf("\nDate: %02d-%02d-%04d\nEvent: %s\n",temp->day,temp->month,temp->year,temp->info);
+    while(temp!=NULL)
+    {
+        printf("\nDate: %02d-%02d-%04d\nEvent: %s\n",temp->eventDate.day,temp->eventDate.month,temp->eventDate.year,temp->eventName);
         temp=temp->link;
     }
+    printf("Total events: %d\n", clubs[n].eventCount);
+    return;
 }
 
-int main()
+void displayClubInformation(int n, Club clubs[])
 {
-    Club clubs[MAX];
-    printf("Enter number of clubs: ");
-    scanf("%d",&clubCount);
-    getchar();
-
-    for(int i=0;i<clubCount;i++)
-    {
-        printf("\nEnter name for Club %d: ",i+1);
-        fgets(clubs[i].clubName,20,stdin);
-        clubs[i].clubName[strcspn(clubs[i].clubName,"\n")]=0;
-
-        printf("Enter description: ");
-        fgets(clubs[i].description,50,stdin);
-        clubs[i].description[strcspn(clubs[i].description,"\n")]=0;
-
-        clubs[i].first=NULL;
-        clubs[i].eventHead=NULL;
-    }
-
-    int choice=0;
-    while(choice!=clubCount+1)
-    {
-        printf("\n------- MAIN MENU ------\n");
-        for(int i=0;i<clubCount;i++)
-            printf("%d. %s\n",i+1,clubs[i].clubName);
-            
-        printf("%d. Exit\nEnter choice: ",clubCount+1);
-        scanf("%d",&choice);
-        
-        if(choice>=1&&choice<=clubCount)
-            clubMenu(choice-1,clubs);
-    }
-    return 0;
+    displayMembers(n,clubs);
+    displayEvents(n,clubs);
+    return;
 }
