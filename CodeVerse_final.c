@@ -63,7 +63,28 @@ void readEventDetails(Event *new)
     printf("Enter date (DD MM YYYY): ");
     scanf("%d %d %d",&new->eventDate.day,&new->eventDate.month,&new->eventDate.year);
 }
-
+Member *getMemberNode()
+{
+    Member *new=(Member *)malloc(sizeof(Member));
+    if(new==NULL)
+    {
+        printf("Memory allocation failed!\n");
+        exit(0);
+    }   
+    new->link=NULL;
+    return new;
+}
+Event *getEventNode()
+{
+    Event *new=(Event *)malloc(sizeof(Event));
+    if(new==NULL)
+    {
+        printf("Memory allocation failed!\n");
+        exit(0);
+    }
+    new->link=NULL;
+    return new;
+}
 int main()
 {
     int N=0;
@@ -72,7 +93,6 @@ int main()
 
     printf("\n\nEnter number of clubs: ");
     scanf("%d",&N);
-    getchar();
 
     for(i=0;i<N;i++)
     {
@@ -93,11 +113,11 @@ int main()
         printf("\n------- MAIN MENU ------\n");
         for(i=0;i<N;i++)
             printf("%d. %s\n",i+1,clubs[i].clubName);
-        printf("0. Exit\n");
+        printf("%d. Exit\n",N+1);
         printf("Enter choice: ");
         scanf("%d",&choice);
 
-        if(choice==0)
+        if(choice == N+1)
             exit(0);
 
         if(choice>=1 && choice<=N)
@@ -146,13 +166,6 @@ void clubMenu(Club *c)
             default:printf("Invalid choice. Try again.\n");
         }
     }
-}
-
-Member *getMemberNode()
-{
-    Member *new=(Member *)malloc(sizeof(Member));
-    new->link=NULL;
-    return new;
 }
 
 void addMember(Club *c)
@@ -206,12 +219,12 @@ void removeMember(Club *c)
 
     if(cur==NULL)
     {
-        printf("Member (%s) not found.\n",USN);
+        printf("Member (%s) not found.\n\n",USN);
         return;
     }
 
     prev->link=cur->link;
-    printf("Member (%s) removed.\n",cur->USN);
+    printf("Member (%s) removed.\n\n",cur->USN);
     free(cur);
     c->memberCount--;
     return;
@@ -222,7 +235,7 @@ void displayMembers(Club *c)
     Member *temp=c->memberLink;
     if(temp==NULL)
     {
-        printf("No members in this club.\n");
+        printf("No members in this club.\n\n");
         return;
     }
 
@@ -239,13 +252,6 @@ void displayMembers(Club *c)
     printf("--------------------------------------------------------------\n");
     printf("Total members: %d\n", c->memberCount);
     return;
-}
-
-Event *getEventNode()
-{
-    Event *new=(Event *)malloc(sizeof(Event));
-    new->link=NULL;
-    return new;
 }
 
 void addEvent(Club *c)
@@ -271,9 +277,10 @@ void deleteEvent(Club *c)
 {
     if(c->eventLink==NULL)
     {
-        printf("No events to delete.\n");
+        printf("No events to delete.\n\n");
         return;
     }
+    
     char name[100];
     printf("Enter event name to delete: ");
     scanf(" %99[^\n]", name);
@@ -283,7 +290,7 @@ void deleteEvent(Club *c)
     if(strcmp(cur->eventName,name)==0) //  EasyPeasyLemonSqueezyBaby
     {
         c->eventLink=cur->link;
-        printf("Event (%s) deleted.\n",cur->eventName);
+        printf("Event (%s) deleted.\n\n",cur->eventName);
         free(cur);
         c->eventCount--;
         return;
@@ -299,12 +306,12 @@ void deleteEvent(Club *c)
 
     if(cur==NULL)
     {
-        printf("Event (%s) not found.\n",name);
+        printf("Event (%s) not found.\n\n",name);
         return;
     }
 
     prev->link=cur->link;
-    printf("Event (%s) deleted.\n",cur->eventName);
+    printf("Event (%s) deleted.\n\n",cur->eventName);
     free(cur);
     c->eventCount--;
     return;
@@ -325,7 +332,7 @@ void displayEvents(Club *c)
         printf("\nDate: %02d-%02d-%04d\nEvent: %s\n",temp->eventDate.day,temp->eventDate.month,temp->eventDate.year,temp->eventName);
         temp=temp->link;
     }
-    printf("Total events: %d\n", c->eventCount);
+    printf("\nTotal events: %d\n\n", c->eventCount);
     return;
 }
 
