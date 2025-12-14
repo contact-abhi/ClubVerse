@@ -200,7 +200,7 @@ void removeMember(Club *c)
     scanf("%s",USN);
 
     Member *cur=c->memberLink, *prev=NULL;
-    if(strcmp(cur->USN,USN) == 0) // first member is the one to remove...EasyPeasyLemonSqueezyBaby
+    if(strcmp(cur->USN,USN) == 0) // first member is the one to remove.......
     {
         c->memberLink=cur->link;
         printf("Member (%s) removed.\n",cur->USN);
@@ -287,7 +287,7 @@ void deleteEvent(Club *c)
 
     Event *cur=c->eventLink,*prev=NULL;
 
-    if(strcmp(cur->eventName,name)==0) //  EasyPeasyLemonSqueezyBaby
+    if(strcmp(cur->eventName,name)==0) // .....
     {
         c->eventLink=cur->link;
         printf("Event (%s) deleted.\n\n",cur->eventName);
