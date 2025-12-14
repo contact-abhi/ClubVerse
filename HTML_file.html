@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #312e81;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .club-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid #c7d2fe;
+        }
+
+        .club-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .club-info {
+            display: flex;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .array-index {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(99, 102, 241, 0.3);
+        }
+
+        .club-details {
+            flex: 1;
+        }
+
+        .club-details h2 {
+            font-size: 1.5rem;
+            color: #312e81;
+            margin-bottom: 0.5rem;
+        }
+
+        .club-details p {
+            color: #64748b;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .club-details strong {
+            color: #1e293b;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary {
+            background: #6366f1;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4f46e5;
+        }
+
+        .btn-success {
+            background: #22c55e;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #16a34a;
+        }
+
+        .btn-purple {
+            background: #a855f7;
+            color: white;
+        }
+
+        .btn-purple:hover {
+            background: #9333ea;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            padding: 0.5rem;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-secondary {
+            background: #cbd5e1;
+            color: #475569;
+        }
+
+        .btn-secondary:hover {
+            background: #94a3b8;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-container {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-container.purple-form {
+            background: #faf5ff;
+            border-color: #d8b4fe;
+        }
+
+        .form-container.blue-form {
+            background: #eff6ff;
+            border-color: #93c5fd;
+        }
+
+        .form-container h3 {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-container.green-form h3 {
+            color: #166534;
+        }
+
+        .form-container.purple-form h3 {
+            color: #6b21a8;
+        }
+
+        .form-container.blue-form h3 {
+            color: #1e40af;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .form-grid.full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-grid.three-col {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        input {
+            padding: 0.6rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .lists-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .list-box {
+            border-radius: 0.5rem;
+            padding: 1rem;
+            border: 2px solid;
+        }
+
+        .list-box.green {
+            background: #f0fdf4;
+            border-color: #86efac;
+        }
+
+        .list-box.purple {
+            background: #faf5ff;
+            border-color: #d8b4fe;
+        }
+
+        .list-box h3 {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .list-box.green h3 {
+            color: #166534;
+        }
+
+        .list-box.purple h3 {
+            color: #6b21a8;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+
+        .node-item {
+            margin-bottom: 1rem;
+        }
+
+        .node-content {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-start;
+        }
+
+        .node-card {
+            flex: 1;
+            background: white;
+            border: 2px solid;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .node-card.green {
+            border-color: #4ade80;
+        }
+
+        .node-card.purple {
+            border-color: #c084fc;
+        }
+
+        .node-type {
+            font-family: monospace;
+            font-size: 0.7rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+
+        .node-field {
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+            color: #334155;
+        }
+
+        .node-field strong {
+            color: #1e293b;
+        }
+
+        .node-pointer {
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 0.5rem;
+        }
+
+        .arrow {
+            text-align: center;
+            color: #6366f1;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0.25rem 0;
+        }
+
+        .arrow.green {
+            color: #22c55e;
+        }
+
+        .arrow.purple {
+            color: #a855f7;
+        }
+
+        @media (max-width: 768px) {
+            .lists-container {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .club-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Club Management System</h1>
+            <p>Array of ClubDetails - Each index contains Member linked list and Event linked list</p>
+        </div>
+
+        <div id="app"></div>
+    </div>
+
+    <script>
+        const ARRAY_SIZE = 5;
+        let clubs = Array.from({ length: ARRAY_SIZE }, (_, i) => ({
+            clubName: `Club ${i}`,
+            description: '',
+            event: '',
+            members: [],
+            events: []
+        }));
+
+        let state = {
+            selectedIndex: null,
+            showMemberForm: false,
+            showEventForm: false,
+            showClubEdit: false,
+            memberForm: { USN: '', name: '', sem: '', Role: '' },
+            eventForm: { info: '', day: '', month: '', year: '' },
+            clubForm: { clubName: '', description: '', event: '' }
+        };
+
+        function render() {
+            const app = document.getElementById('app');
+            app.innerHTML = clubs.map((club, index) => `
+                <div class="club-card">
+                    <!-- Club Header -->
+                    <div class="club-header">
+                        <div class="club-info">
+                            <div class="array-index">[${index}]</div>
+                            <div class="club-details">
+                                <h2>${club.clubName}</h2>
+                                ${club.description ? `<p><strong>Description:</strong> ${club.description}</p>` : ''}
+                                ${club.event ? `<p><strong>Event:</strong> ${club.event}</p>` : ''}
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="showClubEditForm(${index})">
+                            ✏️ Edit Club
+                        </button>
+                    </div>
+
+                    <!-- Club Edit Form -->
+                    ${state.showClubEdit && state.selectedIndex === index ? `
+                        <div class="form-container blue-form">
+                            <h3>Edit Club Details</h3>
+                            <div class="form-grid full">
+                                <input type="text" placeholder="Club Name" value="${state.clubForm.clubName}" 
+                                    oninput="updateClubForm('clubName', this.value)">
+                                <input type="text" placeholder="Description (max 50 chars)" maxlength="50" 
+                                    value="${state.clubForm.description}" oninput="updateClubForm('description', this.value)">
+                                <input type="text" placeholder="Event (max 50 chars)" maxlength="50" 
+                                    value="${state.clubForm.event}" oninput="updateClubForm('event', this.value)">
+                            </div>
+                            <button class="btn btn-primary" onclick="updateClubDetails(${index})">Update</button>
+                            <button class="btn btn-secondary" onclick="cancelClubEdit()">Cancel</button>
+                        </div>
+                    ` : ''}
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn btn-success" onclick="showMemberForm(${index})">
+                            ➕ Add Member
+                        </button>
+                        <button class="btn btn-purple" onclick="showEventForm(${index})">
+                            ➕ Add Event
+                        </button>
+                    </div>
+
+                    <!-- Member Form -->
+                    ${state.showMemberForm && state.selectedIndex === index ? `
+                        <div class="form-container green-form">
+                            <h3>👥 Add New Member</h3>
+                            <div class="form-grid">
+                                <input type="text" placeholder="USN (max 15 chars)" maxlength="15" 
+                                    value="${state.memberForm.USN}" oninput="updateMemberForm('USN', this.value)">
+                                <input type="text" placeholder="Name (max 30 chars)" maxlength="30" 
+                                    value="${state.memberForm.name}" oninput="updateMemberForm('name', this.value)">
+                                <input type="number" placeholder="Semester" 
+                                    value="${state.memberForm.sem}" oninput="updateMemberForm('sem', this.value)">
+                                <input type="text" placeholder="Role (max 20 chars)" maxlength="20" 
+                                    value="${state.memberForm.Role}" oninput="updateMemberForm('Role', this.value)">
+                            </div>
+                            <button class="btn btn-success" onclick="addMember(${index})">Add Member</button>
+                            <button class="btn btn-secondary" onclick="cancelMemberForm()">Cancel</button>
+                        </div>
+                    ` : ''}
+
+                    <!-- Event Form -->
+                    ${state.showEventForm && state.selectedIndex === index ? `
+                        <div class="form-container purple-form">
+                            <h3>📅 Add New Event</h3>
+                            <div class="form-grid full">
+                                <input type="text" placeholder="Event Info (max 100 chars)" maxlength="100" 
+                                    value="${state.eventForm.info}" oninput="updateEventForm('info', this.value)">
+                            </div>
+                            <div class="form-grid three-col">
+                                <input type="number" placeholder="Day" min="1" max="31" 
+                                    value="${state.eventForm.day}" oninput="updateEventForm('day', this.value)">
+                                <input type="number" placeholder="Month" min="1" max="12" 
+                                    value="${state.eventForm.month}" oninput="updateEventForm('month', this.value)">
+                                <input type="number" placeholder="Year" 
+                                    value="${state.eventForm.year}" oninput="updateEventForm('year', this.value)">
+                            </div>
+                            <button class="btn btn-purple" onclick="addEvent(${index})">Add Event</button>
+                            <button class="btn btn-secondary" onclick="cancelEventForm()">Cancel</button>
+                        </div>
+                    ` : ''}
+
+                    <!-- Linked Lists -->
+                    <div class="lists-container">
+                        <!-- Member List -->
+                        <div class="list-box green">
+                            <h3>👥 Member *first → Linked List</h3>
+                            ${club.members.length === 0 ? `
+                                <div class="empty-state">first = NULL</div>
+                            ` : club.members.map((member, mIndex) => `
+                                <div class="node-item">
+                                    <div class="node-content">
+                                        <div class="node-card green">
+                                            <div class="node-type">struct MemberDetails</div>
+                                            <div class="node-field"><strong>USN:</strong> ${member.USN}</div>
+                                            <div class="node-field"><strong>Name:</strong> ${member.name}</div>
+                                            <div class="node-field"><strong>Sem:</strong> ${member.sem}</div>
+                                            <div class="node-field"><strong>Role:</strong> ${member.Role}</div>
+                                            <div class="node-pointer">*link → ${mIndex < club.members.length - 1 ? 'next' : 'NULL'}</div>
+                                        </div>
+                                        <button class="btn btn-danger" onclick="deleteMember(${index}, ${member.nodeId})">
+                                            🗑️
+                                        </button>
+                                    </div>
+                                    ${mIndex < club.members.length - 1 ? '<div class="arrow green">↓</div>' : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <!-- Event List -->
+                        <div class="list-box purple">
+                            <h3>📅 Event *next → Linked List</h3>
+                            ${club.events.length === 0 ? `
+                                <div class="empty-state">next = NULL</div>
+                            ` : club.events.map((event, eIndex) => `
+                                <div class="node-item">
+                                    <div class="node-content">
+                                        <div class="node-card purple">
+                                            <div class="node-type">struct Event</div>
+                                            <div class="node-field"><strong>Info:</strong> ${event.info}</div>
+                                            <div class="node-field"><strong>Date:</strong> ${event.day}/${event.month}/${event.year}</div>
+                                            <div class="node-pointer">*next → ${eIndex < club.events.length - 1 ? 'next' : 'NULL'}</div>
+                                        </div>
+                                        <button class="btn btn-danger" onclick="deleteEvent(${index}, ${event.nodeId})">
+                                            🗑️
+                                        </button>
+                                    </div>
+                                    ${eIndex < club.events.length - 1 ? '<div class="arrow purple">↓</div>' : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showClubEditForm(index) {
+            state.selectedIndex = index;
+            state.showClubEdit = true;
+            state.clubForm = {
+                clubName: clubs[index].clubName,
+                description: clubs[index].description,
+                event: clubs[index].event
+            };
+            render();
+        }
+
+        function updateClubForm(field, value) {
+            state.clubForm[field] = value;
+        }
+
+        function updateClubDetails(index) {
+            clubs[index].clubName = state.clubForm.clubName || clubs[index].clubName;
+            clubs[index].description = state.clubForm.description;
+            clubs[index].event = state.clubForm.event;
+            cancelClubEdit();
+        }
+
+        function cancelClubEdit() {
+            state.showClubEdit = false;
+            state.clubForm = { clubName: '', description: '', event: '' };
+            render();
+        }
+
+        function showMemberForm(index) {
+            state.selectedIndex = index;
+            state.showMemberForm = true;
+            state.showEventForm = false;
+            render();
+        }
+
+        function showEventForm(index) {
+            state.selectedIndex = index;
+            state.showEventForm = true;
+            state.showMemberForm = false;
+            render();
+        }
+
+        function updateMemberForm(field, value) {
+            state.memberForm[field] = value;
+        }
+
+        function updateEventForm(field, value) {
+            state.eventForm[field] = value;
+        }
+
+        function addMember(index) {
+            const form = state.memberForm;
+            if (!form.USN || !form.name || !form.sem || !form.Role) return;
+
+            clubs[index].members.push({
+                USN: form.USN,
+                name: form.name,
+                sem: parseInt(form.sem),
+                Role: form.Role,
+                nodeId: Date.now()
+            });
+
+            cancelMemberForm();
+        }
+
+        function addEvent(index) {
+            const form = state.eventForm;
+            if (!form.info || !form.day || !form.month || !form.year) return;
+
+            clubs[index].events.push({
+                info: form.info,
+                day: parseInt(form.day),
+                month: parseInt(form.month),
+                year: parseInt(form.year),
+                nodeId: Date.now()
+            });
+
+            cancelEventForm();
+        }
+
+        function cancelMemberForm() {
+            state.showMemberForm = false;
+            state.memberForm = { USN: '', name: '', sem: '', Role: '' };
+            render();
+        }
+
+        function cancelEventForm() {
+            state.showEventForm = false;
+            state.eventForm = { info: '', day: '', month: '', year: '' };
+            render();
+        }
+
+        function deleteMember(arrayIndex, nodeId) {
+            clubs[arrayIndex].members = clubs[arrayIndex].members.filter(m => m.nodeId !== nodeId);
+            render();
+        }
+
+        function deleteEvent(arrayIndex, nodeId) {
+            clubs[arrayIndex].events = clubs[arrayIndex].events.filter(e => e.nodeId !== nodeId);
+            render();
+        }
+
+        // Initial render
+        render();
+    </script>
+</body>
+</html>
