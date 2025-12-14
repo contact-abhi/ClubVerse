@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,6 +37,65 @@
         .header p {
             color: #64748b;
             font-size: 1rem;
+        }
+
+        .init-screen {
+            max-width: 500px;
+            margin: 4rem auto;
+            background: white;
+            padding: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .init-screen h2 {
+            color: #312e81;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .init-screen p {
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+
+        .init-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .init-form input {
+            padding: 1rem;
+            font-size: 1.2rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+
+        .init-form input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .init-form button {
+            padding: 1rem;
+            font-size: 1.1rem;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .init-form button:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
 
         .club-card {
@@ -348,6 +405,10 @@
             color: #a855f7;
         }
 
+        .hidden {
+            display: none;
+        }
+
         @media (max-width: 768px) {
             .lists-container {
                 grid-template-columns: 1fr;
@@ -375,19 +436,22 @@
             <p>Array of ClubDetails - Each index contains Member linked list and Event linked list</p>
         </div>
 
-        <div id="app"></div>
+        <!-- Initial Screen -->
+        <div id="initScreen" class="init-screen">
+            <h2>🏛️ Initialize Club Array</h2>
+            <p>Enter the number of clubs you want to manage</p>
+            <div class="init-form">
+                <input type="number" id="clubCount" min="1" max="20" value="5" placeholder="Number of Clubs">
+                <button onclick="initializeClubs()">Create Clubs</button>
+            </div>
+        </div>
+
+        <!-- Main App -->
+        <div id="app" class="hidden"></div>
     </div>
 
     <script>
-        const ARRAY_SIZE = 5;
-        let clubs = Array.from({ length: ARRAY_SIZE }, (_, i) => ({
-            clubName: `Club ${i}`,
-            description: '',
-            event: '',
-            members: [],
-            events: []
-        }));
-
+        let clubs = [];
         let state = {
             selectedIndex: null,
             showMemberForm: false,
@@ -397,6 +461,27 @@
             eventForm: { info: '', day: '', month: '', year: '' },
             clubForm: { clubName: '', description: '', event: '' }
         };
+
+        function initializeClubs() {
+            const count = parseInt(document.getElementById('clubCount').value);
+            
+            if (isNaN(count) || count < 1 || count > 20) {
+                alert('Please enter a valid number between 1 and 20');
+                return;
+            }
+
+            clubs = Array.from({ length: count }, (_, i) => ({
+                clubName: `Club ${i}`,
+                description: '',
+                event: '',
+                members: [],
+                events: []
+            }));
+
+            document.getElementById('initScreen').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
+            render();
+        }
 
         function render() {
             const app = document.getElementById('app');
@@ -639,9 +724,6 @@
             clubs[arrayIndex].events = clubs[arrayIndex].events.filter(e => e.nodeId !== nodeId);
             render();
         }
-
-        // Initial render
-        render();
     </script>
 </body>
-</html>
+    </html>
